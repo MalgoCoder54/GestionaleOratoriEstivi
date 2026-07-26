@@ -1,0 +1,372 @@
+{% extends "base.html" %}
+
+{% block header_actions %}
+<a href="/api/export/iscritti" class="header-action header-action-subtle" title="Esporta report Excel completo (presenze + pranzo, allergie, magliette, no foto, navetta, pagamenti)" aria-label="Esporta report Excel completo">&#128229;</a>
+<button type="button" class="header-action header-action-subtle" onclick="apriAssegnaSquadre()" title="Assegna squadre agli iscritti senza squadra" aria-label="Assegna squadre">&#127944;</button>
+{% endblock %}
+
+{% block content %}
+<div class="layout-split home-layout" id="homeLayout">
+    <aside class="sidebar" id="sidebarPanel">
+        <div class="sidebar-header">
+            <h2>Anagrafica</h2>
+        </div>
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Cerca per nome o cognome..." autocomplete="off">
+        </div>
+        <div class="sidebar-actions">
+            <button class="btn btn-new" onclick="nuovaScheda()" style="flex: 1;">+ Inserisci Nuova Scheda</button>
+        </div>
+        <ul class="iscritti-list" id="iscrittiList">
+            {% for i in iscritti %}
+            <li class="iscritto-item" data-id="{{ i.ID }}" onclick="selezionaIscritto({{ i.ID }})">
+                <span class="iscritto-nome">{{ i.CognomeRagazzo }} {{ i.NomeRagazzo }}</span>
+                <span class="iscritto-data">{{ i.DataNascitaRagazzo.strftime('%d/%m/%Y') if i.DataNascitaRagazzo else '' }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+    </aside>
+
+    <!-- Pannello dettaglio - scroll indipendente -->
+    <section class="detail-panel" id="detailPanel">
+        <div class="detail-empty" id="detailEmpty">
+            <p>Seleziona un iscritto dalla lista per visualizzare i dettagli</p>
+        </div>
+
+        <!-- Vista dettaglio -->
+        <div class="detail-content" id="detailContent" style="display:none;">
+            <div class="mobile-panel-topbar">
+                <button class="btn-mobile-panel-back" onclick="tornaAllaLista()">&larr; Elenco iscritti</button>
+            </div>
+            <div class="detail-header">
+                <h2 id="detailName"></h2>
+                <div class="detail-actions">
+                    <button class="btn-icon" onclick="toggleEdit()" title="Modifica" id="btnEdit">&#9998;</button>
+                    <button class="btn-icon" onclick="salvaIscritto()" title="Salva" id="btnSave" style="display:none;">&#10003;</button>
+                    <button class="btn-icon btn-danger" onclick="annullaEdit()" title="Annulla" id="btnCancel" style="display:none;">&#10007;</button>
+                    <a class="btn-icon" id="btnPagamenti" href="#" title="Pagamenti">&#128176;</a>
+                    {% if has_resend_confirmation_flow %}<button class="btn-icon" onclick="reinviaEmailConferma()" title="Reinvia email di conferma" id="btnResendConfirmation">&#9993;</button>{% endif %}
+                    <button class="btn-icon btn-danger" onclick="eliminaIscritto()" title="Elimina" id="btnDelete">&#128465;</button>
+                </div>
+            </div>
+
+            <h3 class="section-title">Anagrafica Iscritto/a</h3>
+            <div class="form-grid" id="formAnagrafica">
+                <div class="form-row"><label>Nome Ragazzo/a</label><span class="field-view" data-field="NomeRagazzo"></span><input class="field-edit" data-field="NomeRagazzo" style="display:none;"></div>
+                <div class="form-row"><label>Cognome Ragazzo/a</label><span class="field-view" data-field="CognomeRagazzo"></span><input class="field-edit" data-field="CognomeRagazzo" style="display:none;"></div>
+                <div class="form-row"><label>Data di Nascita</label><span class="field-view" data-field="DataNascitaRagazzo"></span><input class="field-edit" data-field="DataNascitaRagazzo" type="date" style="display:none;"></div>
+                <div class="form-row"><label>Codice Fiscale</label><span class="field-view" data-field="CodiceFiscaleRagazzo"></span><input class="field-edit" data-field="CodiceFiscaleRagazzo" style="display:none;"></div>
+                <div class="form-row"><label>Classe frequentata</label><span class="field-view" data-field="ClasseFrequentata"></span><select class="field-edit" data-field="ClasseFrequentata" style="display:none;" id="selectClasse"></select></div>
+                <div class="form-row"><label>Luogo di nascita</label><span class="field-view" data-field="LuogoNascitaRagazzo"></span><input class="field-edit" data-field="LuogoNascitaRagazzo" style="display:none;"></div>
+                <div class="form-row"><label>Residente a</label><span class="field-view" data-field="ResidenteA"></span><input class="field-edit" data-field="ResidenteA" style="display:none;"></div>
+                <div class="form-row"><label>In Via</label><span class="field-view" data-field="InVia"></span><input class="field-edit" data-field="InVia" style="display:none;"></div>
+                <div class="form-row form-row-full"><label>Allergie/Intolleranze</label><span class="field-view" data-field="AllergieIntolleranze"></span><input class="field-edit" data-field="AllergieIntolleranze" style="display:none;"></div>
+                <div class="form-row form-row-full"><label>Terapie e Note</label><span class="field-view" data-field="TerapieNote"></span><input class="field-edit" data-field="TerapieNote" style="display:none;"></div>
+                <div class="form-row"><label>Taglia Maglietta</label><span class="field-view" data-field="TagliaMaglietta"></span><select class="field-edit" data-field="TagliaMaglietta" style="display:none;" id="selectTaglia"></select></div>
+                <div class="form-row"><label>Maglietta Consegnata</label><span class="field-view" data-field="MagliettaConsegnata"></span><select class="field-edit" data-field="MagliettaConsegnata" style="display:none;"><option value="true">SI</option><option value="false">NO</option></select></div>
+                <div class="form-row"><label>Navetta</label><span class="field-view" data-field="Navetta"></span><select class="field-edit" data-field="Navetta" style="display:none;"><option value="true">SI</option><option value="false">NO</option></select></div>
+            </div>
+
+            <h3 class="section-title">Dati Genitori</h3>
+            <div class="form-grid">
+                <div class="form-row"><label>Nome Mamma</label><span class="field-view" data-field="NomeMamma"></span><input class="field-edit" data-field="NomeMamma" style="display:none;"></div>
+                <div class="form-row"><label>Cognome Mamma</label><span class="field-view" data-field="CognomeMamma"></span><input class="field-edit" data-field="CognomeMamma" style="display:none;"></div>
+                <div class="form-row"><label>Mail Mamma</label><span class="field-view" data-field="MailMamma"></span><input class="field-edit" data-field="MailMamma" type="email" style="display:none;"></div>
+                <div class="form-row"><label>Cellulare Mamma</label><span class="field-view" data-field="CellulareMamma"></span><input class="field-edit" data-field="CellulareMamma" type="tel" style="display:none;"></div>
+                <div class="form-row"><label>Nome Papa</label><span class="field-view" data-field="NomePapa"></span><input class="field-edit" data-field="NomePapa" style="display:none;"></div>
+                <div class="form-row"><label>Cognome Papa</label><span class="field-view" data-field="CognomePapa"></span><input class="field-edit" data-field="CognomePapa" style="display:none;"></div>
+                <div class="form-row"><label>Mail Papa</label><span class="field-view" data-field="MailPapa"></span><input class="field-edit" data-field="MailPapa" type="email" style="display:none;"></div>
+                <div class="form-row"><label>Cellulare Papa</label><span class="field-view" data-field="CellularePapa"></span><input class="field-edit" data-field="CellularePapa" type="tel" style="display:none;"></div>
+            </div>
+
+            <h3 class="section-title">Dati Ricevuta</h3>
+            <div class="form-grid">
+                <div class="form-row"><label>Ricevuta intestata a</label><span class="field-view" data-field="RicevutaIntestatA"></span><input class="field-edit" data-field="RicevutaIntestatA" style="display:none;"></div>
+                <div class="form-row"><label>CF Ricevuta</label><span class="field-view" data-field="CodiceFiscaleRicevuta"></span><input class="field-edit" data-field="CodiceFiscaleRicevuta" style="display:none;"></div>
+                <div class="form-row"><label>Email Ricevuta</label><span class="field-view" data-field="MailRicevuta"></span><input class="field-edit" data-field="MailRicevuta" type="email" style="display:none;"></div>
+            </div>
+
+            <h3 class="section-title">Altre Informazioni</h3>
+            <div class="form-grid">
+                <div class="form-row"><label>Squadra</label><span class="field-view" data-field="Squadra"></span><select class="field-edit" data-field="Squadra" style="display:none;" id="selectSquadra"></select></div>
+                <div class="form-row"><label>Uscita Autorizzata</label><span class="field-view" data-field="UscitaAutorizzata"></span><select class="field-edit" data-field="UscitaAutorizzata" style="display:none;"><option value="true">SI</option><option value="false">NO</option></select></div>
+                <div class="form-row"><label>Iscrizione Validata</label><span class="field-view" data-field="IscrizioneValidata"></span><select class="field-edit" data-field="IscrizioneValidata" style="display:none;"><option value="true">SI</option><option value="false">NO</option></select></div>
+                <div class="form-row"><label>Data Validazione</label><span class="field-view" data-field="DataValidazione"></span><input class="field-edit" data-field="DataValidazione" type="date" style="display:none;"></div>
+            </div>
+
+            <h3 class="section-title">Presenza per Settimana</h3>
+            <div class="presenze-strip">
+                {% for s in range(1, config.settimane.numero_settimane + 1) %}
+                <div class="presenza-item">
+                    <span class="presenza-label">Sett. {{ s }}</span>
+                    <span class="field-view field-static presenza-value" data-field="PresenzaSettimana{{ s }}"></span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Form nuova scheda - TUTTI i campi -->
+        <div class="detail-content" id="newForm" style="display:none;">
+            <div class="mobile-panel-topbar">
+                <button class="btn-mobile-panel-back" onclick="tornaAllaLista()">&larr; Elenco iscritti</button>
+            </div>
+            <div class="detail-header">
+                <h2>Nuova Iscrizione</h2>
+                <div class="detail-actions">
+                    <button class="btn-icon" onclick="salvaNuovoIscritto()" title="Salva">&#10003;</button>
+                    <button class="btn-icon btn-danger" onclick="annullaNuovo()" title="Annulla">&#10007;</button>
+                </div>
+            </div>
+
+            <h3 class="section-title">Anagrafica Iscritto/a</h3>
+            <div class="form-grid">
+                <div class="form-row"><label>Nome Ragazzo/a *</label><input id="new_NomeRagazzo" required></div>
+                <div class="form-row"><label>Cognome Ragazzo/a *</label><input id="new_CognomeRagazzo" required></div>
+                <div class="form-row"><label>Data di Nascita</label><input id="new_DataNascitaRagazzo" type="date"></div>
+                <div class="form-row"><label>Codice Fiscale</label><input id="new_CodiceFiscaleRagazzo"></div>
+                <div class="form-row"><label>Classe frequentata</label><select id="new_ClasseFrequentata"></select></div>
+                <div class="form-row"><label>Luogo di nascita</label><input id="new_LuogoNascitaRagazzo"></div>
+                <div class="form-row"><label>Residente a</label><input id="new_ResidenteA"></div>
+                <div class="form-row"><label>In Via</label><input id="new_InVia"></div>
+                <div class="form-row form-row-full"><label>Allergie/Intolleranze</label><input id="new_AllergieIntolleranze" value="Nessuna"></div>
+                <div class="form-row form-row-full"><label>Terapie e Note</label><input id="new_TerapieNote"></div>
+                <div class="form-row"><label>Taglia Maglietta</label><select id="new_TagliaMaglietta"></select></div>
+                <div class="form-row"><label>Navetta</label><select id="new_Navetta"><option value="false">NO</option><option value="true">SI</option></select></div>
+            </div>
+
+            <h3 class="section-title">Dati Genitori</h3>
+            <div class="form-grid">
+                <div class="form-row"><label>Nome Mamma</label><input id="new_NomeMamma"></div>
+                <div class="form-row"><label>Cognome Mamma</label><input id="new_CognomeMamma"></div>
+                <div class="form-row"><label>Mail Mamma</label><input id="new_MailMamma" type="email"></div>
+                <div class="form-row"><label>Cellulare Mamma</label><input id="new_CellulareMamma" type="tel"></div>
+                <div class="form-row"><label>Nome Papa</label><input id="new_NomePapa"></div>
+                <div class="form-row"><label>Cognome Papa</label><input id="new_CognomePapa"></div>
+                <div class="form-row"><label>Mail Papa</label><input id="new_MailPapa" type="email"></div>
+                <div class="form-row"><label>Cellulare Papa</label><input id="new_CellularePapa" type="tel"></div>
+            </div>
+
+            <h3 class="section-title">Dati Ricevuta</h3>
+            <div class="form-grid">
+                <div class="form-row"><label>Ricevuta intestata a</label><input id="new_RicevutaIntestatA"></div>
+                <div class="form-row"><label>CF Ricevuta</label><input id="new_CodiceFiscaleRicevuta"></div>
+                <div class="form-row"><label>Email Ricevuta</label><input id="new_MailRicevuta" type="email"></div>
+            </div>
+
+            <h3 class="section-title">Altre Informazioni</h3>
+            <div class="form-grid">
+                <div class="form-row"><label>Squadra</label><select id="new_Squadra"></select></div>
+                <div class="form-row"><label>Uscita Autorizzata</label><select id="new_UscitaAutorizzata"><option value="false">NO</option><option value="true">SI</option></select></div>
+            </div>
+
+            <div class="form-actions">
+                <button class="btn-save" onclick="salvaNuovoIscritto()">Salva Iscrizione</button>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- Modale "Assegna squadre" -->
+<div id="squadreModal" class="sq-overlay" style="display:none;" onclick="if(event.target===this) chiudiAssegnaSquadre()">
+    <div class="sq-dialog" role="dialog" aria-labelledby="sqModalTitle">
+        <header class="sq-header">
+            <h3 id="sqModalTitle">Assegna squadre</h3>
+            <button class="sq-close" onclick="chiudiAssegnaSquadre()" aria-label="Chiudi">&times;</button>
+        </header>
+        <div class="sq-body" id="sqBody">
+            <p class="sq-loading">Calcolo dell'assegnazione in corso...</p>
+        </div>
+        <footer class="sq-footer">
+            <button class="btn btn-secondary" onclick="chiudiAssegnaSquadre()">Annulla</button>
+            <button class="btn btn-primary" id="sqBtnApplica" onclick="applicaAssegnaSquadre()" disabled>Applica al DB</button>
+        </footer>
+    </div>
+</div>
+
+<style>
+.sq-overlay {
+    position: fixed; inset: 0;
+    background: rgba(15, 23, 42, 0.55);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 9999;
+}
+.sq-dialog {
+    background: #fff; border-radius: 10px;
+    width: min(92vw, 900px); max-height: 88vh;
+    display: flex; flex-direction: column;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+}
+.sq-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 14px 20px; border-bottom: 1px solid #e5e7eb;
+}
+.sq-header h3 { margin: 0; color: #1f2937; }
+.sq-close {
+    background: none; border: none; font-size: 28px; cursor: pointer;
+    color: #6b7280; line-height: 1; padding: 0 4px;
+}
+.sq-body { padding: 18px 20px; overflow: auto; flex: 1; }
+.sq-loading { color: #6b7280; font-style: italic; text-align: center; padding: 30px; }
+.sq-footer {
+    display: flex; justify-content: flex-end; gap: 10px;
+    padding: 12px 20px; border-top: 1px solid #e5e7eb;
+}
+.sq-footer .btn {
+    padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer;
+    font-weight: 600;
+}
+.sq-footer .btn-secondary { background: #e5e7eb; color: #1f2937; }
+.sq-footer .btn-primary { background: #2F5496; color: #fff; }
+.sq-footer .btn-primary:disabled { background: #9ca3af; cursor: not-allowed; }
+.sq-summary {
+    background: #f0f9ff; border-left: 4px solid #2F5496;
+    padding: 10px 14px; margin-bottom: 16px; border-radius: 4px;
+}
+.sq-table {
+    width: 100%; border-collapse: collapse; margin-bottom: 16px;
+    font-size: 13px;
+}
+.sq-table th, .sq-table td {
+    border: 1px solid #d1d5db; padding: 6px 8px; text-align: center;
+}
+.sq-table th { background: #2F5496; color: #fff; }
+.sq-squadra-cell { font-weight: bold; color: #fff; text-align: left !important; }
+.sq-blu    { background: #2E75B6; }
+.sq-rossa  { background: #C00000; }
+.sq-verde  { background: #548235; }
+.sq-gialla { background: #BF8F00; }
+.sq-collisioni {
+    background: #fef3c7; border-left: 4px solid #f59e0b;
+    padding: 10px 14px; margin-bottom: 12px; border-radius: 4px;
+}
+.sq-collisioni h4 { margin: 0 0 6px 0; color: #92400e; }
+.sq-section-title { margin: 18px 0 8px 0; color: #1f2937; font-size: 14px; }
+.sq-list {
+    max-height: 220px; overflow-y: auto; border: 1px solid #e5e7eb;
+    border-radius: 4px; font-size: 12px;
+}
+.sq-list-row {
+    display: grid; grid-template-columns: 1.4fr 1.2fr 1fr;
+    padding: 4px 10px; border-bottom: 1px solid #f3f4f6;
+}
+.sq-list-row.head { background: #f3f4f6; font-weight: bold; }
+.sq-list-row .badge {
+    display: inline-block; padding: 2px 8px; border-radius: 10px;
+    color: #fff; font-size: 11px; font-weight: 600;
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const APP_CONFIG = {{ config | tojson }};
+    let _sqPreviewData = null;
+
+    async function apriAssegnaSquadre() {
+        document.getElementById('squadreModal').style.display = 'flex';
+        document.getElementById('sqBody').innerHTML = '<p class="sq-loading">Calcolo dell\'assegnazione in corso...</p>';
+        document.getElementById('sqBtnApplica').disabled = true;
+        _sqPreviewData = null;
+        try {
+            const r = await fetch('/api/squadre/preview', {
+                method: 'POST',
+                headers: { 'X-CSRFToken': getCSRFToken() },
+            });
+            const data = await r.json();
+            if (!r.ok) throw new Error(data.error || 'Errore');
+            _sqPreviewData = data;
+            renderPreviewSquadre(data);
+        } catch (e) {
+            document.getElementById('sqBody').innerHTML = '<p style="color:#C00000">Errore: ' + e.message + '</p>';
+        }
+    }
+
+    function chiudiAssegnaSquadre() {
+        document.getElementById('squadreModal').style.display = 'none';
+        _sqPreviewData = null;
+    }
+
+    function renderPreviewSquadre(data) {
+        if (data.totale_da_assegnare === 0) {
+            document.getElementById('sqBody').innerHTML =
+                '<p style="text-align:center;padding:30px;color:#548235;font-size:16px;">' +
+                (data.messaggio || 'Tutti gli iscritti hanno già una squadra.') + '</p>';
+            return;
+        }
+
+        const squadreClassMap = { 'Blu':'sq-blu', 'Rossa':'sq-rossa', 'Verde':'sq-verde', 'Gialla':'sq-gialla' };
+        const squadre = data.squadre;
+        const classi = data.classi_ordinate;
+
+        let html = '<div class="sq-summary"><strong>' + data.totale_da_assegnare +
+                   '</strong> iscritti senza squadra verranno assegnati alle 4 squadre, ' +
+                   'bilanciando per classe e genere e tenendo i fratelli separati.</div>';
+
+        if (data.collisioni_fratelli && data.collisioni_fratelli.length) {
+            html += '<div class="sq-collisioni"><h4>⚠ Famiglie con 3+ fratelli (collisioni forzate)</h4><ul style="margin:4px 0 0 18px;">';
+            data.collisioni_fratelli.forEach(c => {
+                html += '<li><strong>' + c.squadra + '</strong>: ' + c.membri.join(', ') + '</li>';
+            });
+            html += '</ul></div>';
+        }
+
+        html += '<h4 class="sq-section-title">Distribuzione risultante (incluse squadre già assegnate)</h4>';
+        html += '<table class="sq-table"><thead><tr><th>Squadra</th>';
+        classi.forEach(c => html += '<th>' + c.replace('Elementare','El').replace('Media','Md') + '</th>');
+        html += '<th>TOT M</th><th>TOT F</th><th>TOTALE</th></tr></thead><tbody>';
+
+        squadre.forEach(sq => {
+            const d = data.distribuzione[sq];
+            html += '<tr><td class="sq-squadra-cell ' + squadreClassMap[sq] + '">' + sq + '</td>';
+            classi.forEach(c => {
+                const cell = d.per_classe[c];
+                html += '<td>' + cell.M + 'M / ' + cell.F + 'F</td>';
+            });
+            html += '<td><strong>' + d.totale_m + '</strong></td>';
+            html += '<td><strong>' + d.totale_f + '</strong></td>';
+            html += '<td><strong>' + d.totale + '</strong></td></tr>';
+        });
+        html += '</tbody></table>';
+
+        html += '<h4 class="sq-section-title">Anteprima assegnazioni (' + data.assegnazioni.length + ')</h4>';
+        html += '<div class="sq-list"><div class="sq-list-row head"><span>Cognome Nome</span><span>Classe</span><span>Squadra</span></div>';
+        data.assegnazioni.forEach(a => {
+            html += '<div class="sq-list-row"><span>' + a.cognome + ' ' + a.nome + '</span>' +
+                    '<span>' + (a.classe || '—') + '</span>' +
+                    '<span><span class="badge ' + squadreClassMap[a.squadra] + '">' + a.squadra + '</span></span></div>';
+        });
+        html += '</div>';
+
+        document.getElementById('sqBody').innerHTML = html;
+        document.getElementById('sqBtnApplica').disabled = false;
+    }
+
+    async function applicaAssegnaSquadre() {
+        if (!_sqPreviewData) return;
+        if (!confirm('Confermi l\'assegnazione di ' + _sqPreviewData.totale_da_assegnare + ' iscritti alle squadre?')) return;
+        const btn = document.getElementById('sqBtnApplica');
+        btn.disabled = true;
+        btn.textContent = 'Applicazione...';
+        try {
+            const r = await fetch('/api/squadre/applica', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCSRFToken(),
+                },
+                body: JSON.stringify({ seed: _sqPreviewData.seed }),
+            });
+            const data = await r.json();
+            if (!r.ok) throw new Error(data.error || 'Errore');
+            alert('Assegnati ' + data.applicati + ' iscritti alle squadre.');
+            chiudiAssegnaSquadre();
+            location.reload();
+        } catch (e) {
+            alert('Errore: ' + e.message);
+            btn.disabled = false;
+            btn.textContent = 'Applica al DB';
+        }
+    }
+</script>
+<script src="{{ static_asset('js/home.js') }}"></script>
+{% endblock %}

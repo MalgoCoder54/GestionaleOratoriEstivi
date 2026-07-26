@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block header_actions %}
+<a href="/api/export/animatori" class="header-action header-action-subtle" title="Esporta report Excel animatori (anagrafica, magliette, allergie, navetta)" aria-label="Esporta report Excel animatori">&#128229;</a>
+{% endblock %}
+
+{% block content %}
+<div class="layout-split home-layout" id="homeLayout">
+    <aside class="sidebar" id="sidebarPanel">
+        <div class="sidebar-header">
+            <h2>Anagrafica Animatori</h2>
+        </div>
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Cerca per nome o cognome..." autocomplete="off">
+        </div>
+        <div class="sidebar-actions">
+            <button class="btn btn-new" onclick="nuovaScheda()" style="flex: 1;">+ Inserisci Nuova Scheda</button>
+        </div>
+        <ul class="iscritti-list" id="animatoriList">
+            {% for i in animatori %}
+            <li class="iscritto-item" data-id="{{ i.ID }}" onclick="selezionaAnimatore({{ i.ID }})">
+                <span class="iscritto-nome">{{ i.Cognome }} {{ i.Nome }}</span>
+                <span class="iscritto-data">{{ 'Maggiorenne' if i.Maggiorenne else 'Minorenne' }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+    </aside>
+
+    <section class="detail-panel" id="detailPanel">
+        <div class="detail-empty" id="detailEmpty">
+            <p>Seleziona un animatore dalla lista per visualizzare i dettagli</p>
+        </div>
+
+        <div class="detail-content" id="detailContent" style="display:none;">
+            <div class="mobile-panel-topbar">
+                <button class="btn-mobile-panel-back" onclick="tornaAllaLista()">&larr; Elenco animatori</button>
+            </div>
+            <div class="detail-header">
+                <h2 id="detailName"></h2>
+                <div class="detail-actions">
+                    <button class="btn-icon" onclick="toggleEdit()" title="Modifica" id="btnEdit">&#9998;</button>
+                    <button class="btn-icon" onclick="salvaAnimatore()" title="Salva" id="btnSave" style="display:none;">&#10003;</button>
+                    <button class="btn-icon btn-danger" onclick="annullaEdit()" title="Annulla" id="btnCancel" style="display:none;">&#10007;</button>
+                    <a class="btn-icon" id="btnContributi" href="#" title="Contributo e presenze">&#128176;</a>
+                    <button class="btn-icon btn-danger" onclick="eliminaAnimatore()" title="Elimina" id="btnDelete">&#128465;</button>
+                </div>
+            </div>
+
+            <h3 class="section-title">Anagrafica</h3>
+            <div class="form-grid">
+                <div class="form-row"><label>Nome</label><span class="field-view" data-field="Nome"></span><input class="field-edit" data-field="Nome" style="display:none;"></div>
+                <div class="form-row"><label>Cognome</label><span class="field-view" data-field="Cognome"></span><input class="field-edit" data-field="Cognome" style="display:none;"></div>
+                <div class="form-row"><label>Data di Nascita</label><span class="field-view" data-field="DataNascita"></span><input class="field-edit" data-field="DataNascita" type="date" style="display:none;"></div>
+                <div class="form-row"><label>Codice Fiscale</label><span class="field-view" data-field="CodiceFiscale"></span><input class="field-edit" data-field="CodiceFiscale" style="display:none;"></div>
+                <div class="form-row"><label>Cellulare</label><span class="field-view" data-field="Cellulare"></span><input class="field-edit" data-field="Cellulare" style="display:none;"></div>
+                <div class="form-row"><label>Email Moduli</label><span class="field-view" data-field="EmailModuli"></span><input class="field-edit" data-field="EmailModuli" type="email" style="display:none;"></div>
+                <div class="form-row"><label>Taglia Maglietta</label><span class="field-view" data-field="TagliaMaglietta"></span><select class="field-edit" data-field="TagliaMaglietta" style="display:none;" id="selectTagliaMaglietta"></select></div>
+                <div class="form-row"><label>Taglia Pantaloncini</label><span class="field-view" data-field="TagliaPantaloncini"></span><select class="field-edit" data-field="TagliaPantaloncini" style="display:none;" id="selectTagliaPantaloncini"></select></div>
+                <div class="form-row"><label>Maglietta Consegnata</label><span class="field-view" data-field="MagliettaConsegnata"></span><select class="field-edit" data-field="MagliettaConsegnata" style="display:none;"><option value="true">SI</option><option value="false">NO</option></select></div>
+                <div class="form-row"><label>Navetta</label><span class="field-view" data-field="Navetta"></span><select class="field-edit" data-field="Navetta" style="display:none;"><option value="true">SI</option><option value="false">NO</option></select></div>
+                <div class="form-row"><label>Maggiorenne</label><span class="field-view" data-field="Maggiorenne"></span><select class="field-edit" data-field="Maggiorenne" style="display:none;"><option value="true">SI</option><option value="false">NO</option></select></div>
+                <div class="form-row form-row-full"><label>Allergie/Intolleranze</label><span class="field-view" data-field="AllergieIntolleranze"></span><input class="field-edit" data-field="AllergieIntolleranze" style="display:none;"></div>
+                <div class="form-row form-row-full"><label>Terapie e Note</label><span class="field-view" data-field="TerapieNote"></span><input class="field-edit" data-field="TerapieNote" style="display:none;"></div>
+            </div>
+
+            <h3 class="section-title">Dati Genitori/Tutori</h3>
+            <div class="form-grid">
+                <div class="form-row"><label>Nome Mamma</label><span class="field-view" data-field="NomeMamma"></span><input class="field-edit" data-field="NomeMamma" style="display:none;"></div>
+                <div class="form-row"><label>Cognome Mamma</label><span class="field-view" data-field="CognomeMamma"></span><input class="field-edit" data-field="CognomeMamma" style="display:none;"></div>
+                <div class="form-row"><label>Mail Mamma</label><span class="field-view" data-field="MailMamma"></span><input class="field-edit" data-field="MailMamma" type="email" style="display:none;"></div>
+                <div class="form-row"><label>Cellulare Mamma</label><span class="field-view" data-field="CellulareMamma"></span><input class="field-edit" data-field="CellulareMamma" style="display:none;"></div>
+                <div class="form-row"><label>Nome Papa</label><span class="field-view" data-field="NomePapa"></span><input class="field-edit" data-field="NomePapa" style="display:none;"></div>
+                <div class="form-row"><label>Cognome Papa</label><span class="field-view" data-field="CognomePapa"></span><input class="field-edit" data-field="CognomePapa" style="display:none;"></div>
+                <div class="form-row"><label>Mail Papa</label><span class="field-view" data-field="MailPapa"></span><input class="field-edit" data-field="MailPapa" type="email" style="display:none;"></div>
+                <div class="form-row"><label>Cellulare Papa</label><span class="field-view" data-field="CellularePapa"></span><input class="field-edit" data-field="CellularePapa" style="display:none;"></div>
+            </div>
+
+            <h3 class="section-title">Stato Segreteria</h3>
+            <div class="form-grid">
+                <div class="form-row"><label>Stato Documenti</label><span class="field-view" data-field="StatoDocumenti"></span><select class="field-edit" data-field="StatoDocumenti" style="display:none;" id="selectStatoDocumenti"></select></div>
+                <div class="form-row"><label>Stato Operativo</label><span class="field-view" data-field="StatoOperativo"></span><select class="field-edit" data-field="StatoOperativo" style="display:none;" id="selectStatoOperativo"></select></div>
+                <div class="form-row"><label>Validata</label><span class="field-view" data-field="IscrizioneValidata"></span><select class="field-edit" data-field="IscrizioneValidata" style="display:none;"><option value="true">SI</option><option value="false">NO</option></select></div>
+                <div class="form-row"><label>Data Validazione</label><span class="field-view" data-field="DataValidazione"></span><input class="field-edit" data-field="DataValidazione" type="date" style="display:none;"></div>
+                <div class="form-row form-row-full"><label>Note Segreteria</label><span class="field-view" data-field="NoteSegreteria"></span><textarea class="field-edit" data-field="NoteSegreteria" style="display:none;"></textarea></div>
+            </div>
+        </div>
+
+        <div class="detail-content" id="newForm" style="display:none;">
+            <div class="mobile-panel-topbar">
+                <button class="btn-mobile-panel-back" onclick="tornaAllaLista()">&larr; Elenco animatori</button>
+            </div>
+            <div class="detail-header">
+                <h2>Nuovo Animatore</h2>
+                <div class="detail-actions">
+                    <button class="btn-icon" onclick="salvaNuovoAnimatore()" title="Salva">&#10003;</button>
+                    <button class="btn-icon btn-danger" onclick="annullaNuovo()" title="Annulla">&#10007;</button>
+                </div>
+            </div>
+
+            <h3 class="section-title">Anagrafica</h3>
+            <div class="form-grid">
+                <div class="form-row"><label>Nome *</label><input id="new_Nome" required></div>
+                <div class="form-row"><label>Cognome *</label><input id="new_Cognome" required></div>
+                <div class="form-row"><label>Data di Nascita</label><input id="new_DataNascita" type="date"></div>
+                <div class="form-row"><label>Codice Fiscale</label><input id="new_CodiceFiscale"></div>
+                <div class="form-row"><label>Cellulare</label><input id="new_Cellulare"></div>
+                <div class="form-row"><label>Email Moduli</label><input id="new_EmailModuli" type="email"></div>
+                <div class="form-row"><label>Taglia Maglietta</label><select id="new_TagliaMaglietta"></select></div>
+                <div class="form-row"><label>Taglia Pantaloncini</label><select id="new_TagliaPantaloncini"></select></div>
+                <div class="form-row"><label>Navetta</label><select id="new_Navetta"><option value="false">NO</option><option value="true">SI</option></select></div>
+                <div class="form-row"><label>Maggiorenne</label><select id="new_Maggiorenne"><option value="false">NO</option><option value="true">SI</option></select></div>
+                <div class="form-row form-row-full"><label>Allergie/Intolleranze</label><input id="new_AllergieIntolleranze" value="Nessuna"></div>
+                <div class="form-row form-row-full"><label>Terapie e Note</label><input id="new_TerapieNote"></div>
+            </div>
+
+            <h3 class="section-title">Dati Genitori/Tutori</h3>
+            <div class="form-grid">
+                <div class="form-row"><label>Nome Mamma</label><input id="new_NomeMamma"></div>
+                <div class="form-row"><label>Cognome Mamma</label><input id="new_CognomeMamma"></div>
+                <div class="form-row"><label>Mail Mamma</label><input id="new_MailMamma" type="email"></div>
+                <div class="form-row"><label>Cellulare Mamma</label><input id="new_CellulareMamma"></div>
+                <div class="form-row"><label>Nome Papa</label><input id="new_NomePapa"></div>
+                <div class="form-row"><label>Cognome Papa</label><input id="new_CognomePapa"></div>
+                <div class="form-row"><label>Mail Papa</label><input id="new_MailPapa" type="email"></div>
+                <div class="form-row"><label>Cellulare Papa</label><input id="new_CellularePapa"></div>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const APP_CONFIG = {{ config | tojson }};
+</script>
+<script src="{{ static_asset('js/home.js') }}"></script>
+{% endblock %}

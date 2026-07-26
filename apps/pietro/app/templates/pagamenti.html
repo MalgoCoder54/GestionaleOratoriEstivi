@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="layout-split">
+    <!-- Sidebar left: summary panel -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>Pagamenti</h2>
+        </div>
+        <div style="padding: 16px; flex: 1; overflow-y: auto;">
+            <!-- Child info card -->
+            <div style="margin-bottom: 16px;">
+                <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--gray-600); margin-bottom: 4px;">Iscritto/a</div>
+                <div style="font-size: 16px; font-weight: 600; color: var(--green-dark);">{{ iscritto.CognomeRagazzo }} {{ iscritto.NomeRagazzo }}</div>
+            </div>
+
+            <!-- Quick nav -->
+            <div style="margin-bottom: 16px;">
+                <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--gray-600); margin-bottom: 8px;">Sezioni</div>
+                <ul style="list-style: none;">
+                    <li class="iscritto-item" onclick="document.getElementById('sezNote').scrollIntoView({behavior:'smooth'})" style="cursor:pointer; padding: 8px 12px; border-bottom: 1px solid var(--gray-200); font-size: 13px; font-weight: 500;">Note</li>
+                    <li class="iscritto-item" onclick="document.getElementById('sezIscrizione').scrollIntoView({behavior:'smooth'})" style="cursor:pointer; padding: 8px 12px; border-bottom: 1px solid var(--gray-200); font-size: 13px; font-weight: 500;">Iscrizione</li>
+                    <li class="iscritto-item" onclick="document.getElementById('settimaneContainer').scrollIntoView({behavior:'smooth'})" style="cursor:pointer; padding: 8px 12px; border-bottom: 1px solid var(--gray-200); font-size: 13px; font-weight: 500;">Settimane</li>
+                </ul>
+            </div>
+
+            <!-- Actions -->
+            <div style="padding: 0 0 8px;">
+                <a href="/" class="btn btn-new" style="display: block; text-align: center; text-decoration: none;">&larr; Torna alla lista</a>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Detail panel: payment content -->
+    <section class="detail-panel" id="detailPanel">
+        <div class="detail-content" id="pagamentiContainer" data-iscritto-id="{{ iscritto.ID }}">
+            <!-- Header -->
+            <div class="detail-header">
+                <h2>
+                    <span class="print-title" style="display:none;">Pagamenti</span>
+                    <span class="print-child-name" style="display:none;">{{ iscritto.CognomeRagazzo }} {{ iscritto.NomeRagazzo }}</span>
+                    {{ iscritto.CognomeRagazzo }} {{ iscritto.NomeRagazzo }} - Pagamenti
+                </h2>
+                <div class="detail-actions">
+                    <button class="btn-icon" onclick="toggleEditPagamenti()" title="Modifica" id="btnEditPag">&#9998;</button>
+                    <button class="btn-icon" onclick="salvaPagamenti()" title="Salva" id="btnSavePag" style="display:none;">&#10003;</button>
+                    <button class="btn-icon btn-danger" onclick="annullaEditPagamenti()" title="Annulla" id="btnCancelPag" style="display:none;">&#10007;</button>
+                    <button class="btn-print" onclick="window.print()" title="Stampa">&#128424;</button>
+                </div>
+            </div>
+
+            <!-- Note / Gratuita section -->
+            <div class="pag-section" id="sezNote">
+                <h3 class="section-title">Note</h3>
+                <div class="pag-row-group">
+                    <div class="form-row">
+                        <label>Gratuita</label>
+                        <span class="pag-view" data-field="Gratuita"></span>
+                        <select class="pag-edit" data-field="Gratuita" style="display:none;">
+                            <option value="false">NO</option>
+                            <option value="true">SI</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Iscrizione -->
+            <div class="pag-section" id="sezIscrizione">
+                <h3 class="section-title">Iscrizione</h3>
+                <div class="pag-row-group">
+                    <div class="form-row">
+                        <label>Importo</label>
+                        <span class="pag-view" data-field="ImportoIscrizione"></span>
+                        <input type="number" step="0.01" class="pag-edit" data-field="ImportoIscrizione" style="display:none;">
+                    </div>
+                    <div class="form-row">
+                        <label>Magliette extra (qta)</label>
+                        <span class="pag-view" data-field="NumeroMaglietteExtra"></span>
+                        <input type="number" min="0" step="1" class="pag-edit" data-field="NumeroMaglietteExtra" style="display:none;">
+                    </div>
+                    <div class="form-row">
+                        <label>Totale magliette extra</label>
+                        <span class="pag-view" data-field="ImportoMaglietteExtra"></span>
+                        <input type="number" step="0.01" class="pag-edit input-disabled" data-field="ImportoMaglietteExtra" style="display:none;" readonly>
+                    </div>
+                    <div class="form-row">
+                        <label>Pagata</label>
+                        <span class="pag-view" data-field="IscrizionePagata"></span>
+                        <select class="pag-edit" data-field="IscrizionePagata" style="display:none;">
+                            <option value="false">NO</option>
+                            <option value="true">SI</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <label>Data Pagamento</label>
+                        <span class="pag-view" data-field="DataPagamentoIscrizione"></span>
+                        <input type="date" class="pag-edit" data-field="DataPagamentoIscrizione" style="display:none;">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settimane: generated by JS -->
+            <div id="settimaneContainer"></div>
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const ISCRITTO_ID = {{ iscritto.ID }};
+    const APP_CONFIG = {{ config | tojson }};
+</script>
+<script src="{{ static_asset('js/pagamenti.js') }}"></script>
+{% endblock %}

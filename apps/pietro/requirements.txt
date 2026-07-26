@@ -1,0 +1,8 @@
+flask==3.1.*
+flask-wtf==1.*
+flask-sqlalchemy==3.1.*
+gunicorn==23.*
+pyodbc==5.*
+sqlalchemy==2.*
+python-dotenv==1.*
+openpyxl==3.1.*

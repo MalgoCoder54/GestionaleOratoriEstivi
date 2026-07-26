@@ -1,0 +1,75 @@
+{
+  "evento_corrente": "EVENTO_ESEMPIO",
+  "importi_default": {
+    "iscrizione": 25.0,
+    "mattina": 20.0,
+    "pomeriggio": 20.0,
+    "pranzo": 20.0
+  },
+  "settimane": {
+    "numero_settimane": 5,
+    "date_inizio": [
+      "2030-06-10",
+      "2030-06-17",
+      "2030-06-24",
+      "2030-07-01",
+      "2030-07-08"
+    ],
+    "gite": [
+      {
+        "nome": "Gita 1",
+        "data": "2030-06-14",
+        "settimana": 1,
+        "importo": 30.0,
+        "attiva": true
+      },
+      {
+        "nome": "Gita 2",
+        "data": "2030-06-21",
+        "settimana": 2,
+        "importo": 30.0,
+        "attiva": true
+      },
+      {
+        "nome": "Gita 3",
+        "data": "2030-06-28",
+        "settimana": 3,
+        "importo": 30.0,
+        "attiva": false
+      },
+      {
+        "nome": "Gita 4",
+        "data": "2030-07-05",
+        "settimana": 4,
+        "importo": 30.0,
+        "attiva": false
+      }
+    ]
+  },
+  "classi_disponibili": [
+    "1° Elementare",
+    "2° Elementare",
+    "3° Elementare",
+    "4° Elementare",
+    "5° Elementare",
+    "1° Media",
+    "2° Media",
+    "3° Media"
+  ],
+  "taglie_maglietta": [
+    "5/6 anni",
+    "7/8 anni",
+    "9/10 anni",
+    "11/12 anni",
+    "13/14 anni",
+    "S",
+    "M",
+    "L"
+  ],
+  "squadre": [
+    "Rossa",
+    "Blu",
+    "Gialla",
+    "Verde"
+  ]
+}

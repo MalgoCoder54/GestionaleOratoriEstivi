@@ -1,0 +1,29 @@
+{
+  "evento_corrente": "EVENTO_ESEMPIO",
+  "importi_default": {
+    "contributo": 25.0,
+    "maglietta_extra": 5.0
+  },
+  "settimane": {
+    "numero_settimane": 5,
+    "date_inizio": [
+      "2030-06-10",
+      "2030-06-17",
+      "2030-06-24",
+      "2030-07-01",
+      "2030-07-08"
+    ],
+    "etichette": [
+      "Settimana 1",
+      "Settimana 2",
+      "Settimana 3",
+      "Settimana 4",
+      "Settimana 5"
+    ],
+    "gite": []
+  },
+  "taglie_maglietta": ["XS", "S", "M", "L", "XL"],
+  "taglie_pantaloncini": ["XS", "S", "M", "L", "XL"],
+  "stati_documenti": ["DA_INVIARE", "INVIATI", "FIRMATI_RICEVUTI"],
+  "stati_operativi": ["IN_ATTESA_FIRMA", "IMPORTATO", "ATTIVO", "SOSPESO", "RITIRATO"]
+}

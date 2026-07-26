@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>{{ app_display_name }}{% if organization_name %} - {{ organization_name }}{% endif %}</title>
+    <link rel="stylesheet" href="{{ static_asset('css/style.css') }}">
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <header class="app-header">
+        <div class="header-content">
+            <a href="/" class="header-logo-link">
+                <img src="{{ static_asset(brand_logo_path) }}" alt="Logo" class="header-logo">
+                <div class="header-title">
+                    <h1>{{ app_display_name }}</h1>
+                    {% if organization_name or organization_location %}<span class="header-subtitle">{{ organization_name }}{% if organization_location %} - {{ organization_location }}{% endif %}</span>{% endif %}
+                </div>
+            </a>
+            <div class="header-actions">
+                {% if auth_user and auth_user.name %}
+                <span class="header-user">{{ auth_user.name }}</span>
+                {% endif %}
+                <details class="header-menu">
+                    <summary class="header-action header-action-primary header-action-menu">Menu</summary>
+                    <nav class="header-menu-panel">
+                        <a href="/" class="header-menu-link {% if request.path == '/' %}active{% endif %}">Anagrafica</a>
+                        <a href="/visualizzazione-dati" class="header-menu-link {% if request.path.startswith('/visualizzazione-dati') %}active{% endif %}">Vista Dati</a>
+                        <a href="/bi" class="header-menu-link {% if request.path.startswith('/bi') %}active{% endif %}">Grafici BI</a>
+                        <a href="/configurazione" class="header-menu-link {% if request.path.startswith('/configurazione') %}active{% endif %}">Configurazione</a>
+                        <a href="/mobile" class="header-menu-link {% if request.path.startswith('/mobile') %}active{% endif %}">Mobile</a>
+                    </nav>
+                </details>
+                {% block header_actions %}{% endblock %}
+            </div>
+        </div>
+    </header>
+
+    <main class="app-main">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="app-footer">
+        <span class="footer-note">{{ app_display_name }}</span>
+    </footer>
+
+    <script src="{{ static_asset('js/common.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

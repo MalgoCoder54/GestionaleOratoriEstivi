@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-shell">
+    <div class="page-container config-page">
+        <div class="config-hero">
+            <div class="config-hero-main">
+                <div class="page-header config-page-header">
+                    <a href="/" class="btn-back">&larr;</a>
+                    <div>
+                        <h2>Configurazione</h2>
+                        <p class="config-hero-note">Gestisci importi, calendario, gite e opzioni disponibili per l'evento attivo.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="config-hero-summary">
+                <span class="config-summary-label">Evento attivo</span>
+                <strong class="config-summary-value">{{ config.settimane.numero_settimane }} settimane configurate</strong>
+            </div>
+        </div>
+
+        <form id="configForm" class="config-form" onsubmit="return salvaConfig(event)">
+            <section class="pag-section config-section">
+                <div class="config-section-header">
+                    <h3 class="section-title">Importi Default</h3>
+                    <p class="config-section-description">Questi valori vengono proposti automaticamente nelle settimane e nella quota di iscrizione.</p>
+                </div>
+                <div class="form-grid">
+                    <div class="form-row">
+                        <label>Iscrizione (&euro;)</label>
+                        <input type="number" step="0.01" id="cfg_iscrizione" value="{{ config.importi_default.iscrizione }}">
+                    </div>
+                    <div class="form-row">
+                        <label>Mattina (&euro;)</label>
+                        <input type="number" step="0.01" id="cfg_mattina" value="{{ config.importi_default.mattina }}">
+                    </div>
+                    <div class="form-row">
+                        <label>Pomeriggio (&euro;)</label>
+                        <input type="number" step="0.01" id="cfg_pomeriggio" value="{{ config.importi_default.pomeriggio }}">
+                    </div>
+                    <div class="form-row">
+                        <label>Pranzo (&euro;)</label>
+                        <input type="number" step="0.01" id="cfg_pranzo" value="{{ config.importi_default.pranzo }}">
+                    </div>
+                </div>
+            </section>
+
+            <section class="pag-section config-section">
+                <div class="config-section-header">
+                    <h3 class="section-title">Settimane</h3>
+                    <p class="config-section-description">Le date definiscono il calendario ufficiale usato anche dalla vista mobile e dai pagamenti.</p>
+                </div>
+                <div class="form-grid">
+                    {% for i in range(config.settimane.numero_settimane) %}
+                    <div class="form-row">
+                        <label>Settimana {{ i + 1 }} - Inizio</label>
+                        <input type="date" class="cfg_data_settimana" value="{{ config.settimane.date_inizio[i] }}">
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <section class="pag-section config-section">
+                <div class="config-section-header">
+                    <h3 class="section-title">Gite</h3>
+                    <p class="config-section-description">Ogni gita può avere nome, data, settimana associata, importo e stato attivo/disattivo.</p>
+                </div>
+                <div id="giteContainer">
+                    {% for g in config.settimane.gite %}
+                    <div class="gita-config-row" data-index="{{ loop.index0 }}">
+                        <div class="config-inline-header">
+                            <h4>Gita {{ loop.index }}</h4>
+                            <button type="button" class="btn-icon btn-danger" onclick="this.closest('.gita-config-row').remove()" title="Rimuovi gita">&times;</button>
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-row"><label>Nome</label><input class="cfg_gita_nome" value="{{ g.nome }}"></div>
+                            <div class="form-row"><label>Data</label><input type="date" class="cfg_gita_data" value="{{ g.data }}"></div>
+                            <div class="form-row"><label>Settimana</label><input type="number" min="1" max="{{ config.settimane.numero_settimane }}" class="cfg_gita_settimana" value="{{ g.settimana }}"></div>
+                            <div class="form-row"><label>Importo (&euro;)</label><input type="number" step="0.01" class="cfg_gita_importo" value="{{ g.importo }}"></div>
+                            <div class="form-row form-row-inline"><label>Attiva</label><input type="checkbox" class="cfg_gita_attiva" {{ 'checked' if g.attiva }}></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <button type="button" class="btn btn-new config-add-button" onclick="aggiungiGitaItem()">+ Aggiungi gita</button>
+            </section>
+
+            <section class="pag-section config-section">
+                <div class="config-section-header">
+                    <h3 class="section-title">Classi Disponibili</h3>
+                    <p class="config-section-description">Le voci qui presenti compaiono nel menu a tendina dell'anagrafica.</p>
+                </div>
+                <div id="classiContainer">
+                    {% for c in config.classi_disponibili %}
+                    <div class="form-row inline-editor-row config-list-row">
+                        <input type="text" class="cfg_classe_item" value="{{ c }}">
+                        <button type="button" class="btn-icon btn-danger" onclick="this.parentElement.remove()" title="Rimuovi">&times;</button>
+                    </div>
+                    {% endfor %}
+                </div>
+                <button type="button" class="btn btn-new config-add-button" onclick="aggiungiClasseItem()">+ Aggiungi classe</button>
+            </section>
+
+            <section class="pag-section config-section">
+                <div class="config-section-header">
+                    <h3 class="section-title">Taglie Maglietta</h3>
+                    <p class="config-section-description">Personalizza l'elenco delle taglie disponibili in fase di registrazione.</p>
+                </div>
+                <div id="taglieContainer">
+                    {% for t in config.taglie_maglietta %}
+                    <div class="form-row inline-editor-row config-list-row">
+                        <input type="text" class="cfg_taglia_item" value="{{ t }}">
+                        <button type="button" class="btn-icon btn-danger" onclick="this.parentElement.remove()" title="Rimuovi">&times;</button>
+                    </div>
+                    {% endfor %}
+                </div>
+                <button type="button" class="btn btn-new config-add-button" onclick="aggiungiTagliaItem()">+ Aggiungi taglia</button>
+            </section>
+
+            <section class="pag-section config-section">
+                <div class="config-section-header">
+                    <h3 class="section-title">Squadre</h3>
+                    <p class="config-section-description">Definisci i nomi delle squadre disponibili per l'assegnazione automatica o manuale.</p>
+                </div>
+                <div id="squadreContainer">
+                    {% for s in config.squadre %}
+                    <div class="form-row inline-editor-row config-list-row">
+                        <input type="text" class="cfg_squadra_item" value="{{ s }}">
+                        <button type="button" class="btn-icon btn-danger" onclick="this.parentElement.remove()" title="Rimuovi">&times;</button>
+                    </div>
+                    {% endfor %}
+                </div>
+                <button type="button" class="btn btn-new config-add-button" onclick="aggiungiSquadraItem()">+ Aggiungi squadra</button>
+            </section>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-save">Salva Configurazione</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const CURRENT_CONFIG = {{ config | tojson }};
+</script>
+<script src="{{ static_asset('js/configurazione.js') }}"></script>
+{% endblock %}

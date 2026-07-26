@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-shell">
+    <div class="page-container reporting-page">
+        <div class="page-header reporting-page-header">
+            <a href="/" class="btn-back">&larr;</a>
+            <div>
+                <h2>Grafici BI</h2>
+                <p class="page-lead">Cruscotto operativo per leggere subito numeri, distribuzioni e composizione delle squadre.</p>
+            </div>
+        </div>
+
+        <section class="report-card report-card-hero">
+            <div class="report-toolbar report-toolbar-stack">
+                <div>
+                    <p class="report-title">Cruscotto iscritti</p>
+                    <p class="report-subtitle" id="biScopeSummary">Caricamento dati in corso...</p>
+                </div>
+                <div class="bi-filter-grid">
+                    <label class="bi-filter-group">
+                        <span>Settimana</span>
+                        <select id="biWeekFilter"></select>
+                    </label>
+                    <label class="bi-filter-group">
+                        <span>Classe</span>
+                        <select id="biClasseFilter"></select>
+                    </label>
+                    <label class="bi-filter-group">
+                        <span>Squadra</span>
+                        <select id="biSquadraFilter"></select>
+                    </label>
+                    <label class="bi-filter-group">
+                        <span>Taglia</span>
+                        <select id="biTagliaFilter"></select>
+                    </label>
+                    <div class="bi-filter-group bi-filter-group-action">
+                        <span>Reset</span>
+                        <button type="button" class="btn btn-reset" id="biResetFilters">Pulisci filtri</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="kpi-grid" id="biKpiGrid"></div>
+        </section>
+
+        <div class="chart-grid">
+            <section class="report-card chart-card">
+                <div class="chart-card-header">
+                    <div>
+                        <p class="report-title">Distribuzione per classe</p>
+                        <p class="report-subtitle">Quanti iscritti rientrano in ogni classe frequentata.</p>
+                    </div>
+                </div>
+                <div id="biClassChart" class="bar-chart-list"></div>
+            </section>
+
+            <section class="report-card chart-card">
+                <div class="chart-card-header">
+                    <div>
+                        <p class="report-title">Distribuzione per taglia</p>
+                        <p class="report-subtitle">Taglie maglietta piu richieste nel perimetro filtrato.</p>
+                    </div>
+                </div>
+                <div id="biTagliaChart" class="bar-chart-list"></div>
+            </section>
+
+            <section class="report-card chart-card">
+                <div class="chart-card-header">
+                    <div>
+                        <p class="report-title">Distribuzione per squadra</p>
+                        <p class="report-subtitle">Confronto immediato tra squadre assegnate.</p>
+                    </div>
+                </div>
+                <div id="biSquadraChart" class="bar-chart-list"></div>
+            </section>
+
+            <section class="report-card chart-card chart-card-wide">
+                <div class="chart-card-header">
+                    <div>
+                        <p class="report-title">Classi per squadra</p>
+                        <p class="report-subtitle">Barre impilate al 100% per capire come si compongono le squadre.</p>
+                    </div>
+                </div>
+                <div id="biStackLegend" class="stacked-legend"></div>
+                <div id="biStackChart" class="stacked-chart-list"></div>
+            </section>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ static_asset('js/reporting_bi.js') }}"></script>
+{% endblock %}

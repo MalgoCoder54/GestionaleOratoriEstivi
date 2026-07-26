@@ -1,0 +1,27 @@
+{
+  "evento_corrente": "EVENTO_ESEMPIO",
+  "importi_default": {
+    "iscrizione": 25.0,
+    "mattina": 20.0,
+    "pomeriggio": 20.0,
+    "pranzo": 20.0
+  },
+  "settimane": {
+    "numero_settimane": 5,
+    "date_inizio": [
+      "2030-06-10",
+      "2030-06-17",
+      "2030-06-24",
+      "2030-07-01",
+      "2030-07-08"
+    ],
+    "gite": []
+  },
+  "classi_disponibili": [
+    "Classe 1",
+    "Classe 2",
+    "Classe 3"
+  ],
+  "taglie_maglietta": ["XS", "S", "M", "L", "XL"],
+  "squadre": ["Squadra A", "Squadra B", "Squadra C", "Squadra D"]
+}

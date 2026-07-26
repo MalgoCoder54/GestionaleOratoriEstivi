@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-shell">
+    <div class="page-container reporting-page">
+        <div class="page-header reporting-page-header">
+            <a href="/" class="btn-back">&larr;</a>
+            <div>
+                <h2>Visualizzazione Dati</h2>
+                <p class="page-lead">Vista complessiva dell'anagrafica con filtro dedicato su ogni colonna.</p>
+            </div>
+        </div>
+
+        <section class="report-card">
+            <div class="report-toolbar">
+                <div>
+                    <p class="report-title">Tabella anagrafica completa</p>
+                    <p class="report-subtitle">Filtra direttamente sotto ogni intestazione per nome, email, classe, squadra e altri campi utili.</p>
+                </div>
+                <div class="report-actions">
+                    <span class="report-chip" id="overviewCount">Caricamento...</span>
+                    <button type="button" class="btn btn-reset" id="overviewReset">Azzera filtri</button>
+                </div>
+            </div>
+
+            <div class="data-table-shell">
+                <table class="data-table" id="overviewTable">
+                    <thead id="overviewTableHead"></thead>
+                    <tbody id="overviewTableBody"></tbody>
+                </table>
+            </div>
+
+            <div class="report-empty" id="overviewEmpty" hidden>
+                Nessun iscritto corrisponde ai filtri impostati.
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ static_asset('js/reporting_table.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ app_display_name }} - Ricerca</title>
+    <link rel="stylesheet" href="{{ static_asset('css/style.css') }}">
+</head>
+<body class="mobile-body">
+    <header class="mobile-header">
+        <div class="mobile-header-brand">
+            <img src="{{ static_asset(brand_logo_path) }}" alt="Logo" class="mobile-logo">
+            <h1>{{ app_display_name }}</h1>
+        </div>
+        <details class="mobile-nav-menu">
+            <summary class="mobile-nav-toggle">Menu</summary>
+            <nav class="mobile-nav-panel">
+                <a href="/mobile" class="mobile-nav-link active">Elenco</a>
+                <a href="/bi" class="mobile-nav-link">Grafici BI</a>
+                <a href="/" class="mobile-nav-link">Anagrafica desktop</a>
+            </nav>
+        </details>
+    </header>
+
+    <div class="mobile-container">
+        <section class="mobile-list-screen" id="mobileListScreen">
+            <div class="mobile-search-shell">
+                <span class="mobile-search-label">Ricerca rapida</span>
+                <div class="mobile-search">
+                    <input type="text" id="mobileSearch" placeholder="Cerca bambino/a..." autocomplete="off">
+                    <button type="button" id="mobileClearSearch" class="mobile-clear-btn" onclick="clearMobileSearch()" style="display:none;">&times;</button>
+                </div>
+            </div>
+
+            <div id="mobileSpinner" class="mobile-spinner" style="display:none;">
+                <div class="mobile-spinner-ring"></div>
+                <p>Ricerca in corso...</p>
+            </div>
+
+            <div class="mobile-list-meta">
+                <span id="mobileResultCount" class="mobile-result-count">Elenco iscritti</span>
+            </div>
+
+            <ul class="mobile-results" id="mobileResults"></ul>
+        </section>
+
+        <section class="mobile-detail-screen" id="mobileCard" hidden>
+            <div class="mobile-detail-topbar">
+                <button class="btn-back-mobile" onclick="chiudiScheda()">&larr; Elenco</button>
+            </div>
+
+            <div class="mobile-card">
+                <div class="mobile-card-header">
+                    <h2 id="mobileNome"></h2>
+                    <div class="mobile-presence-badge" id="mobilePresenza"></div>
+                </div>
+
+                <div class="mobile-section">
+                    <h3>Dati rapidi</h3>
+                    <div class="mobile-info-grid">
+                        <div class="mobile-info-item">
+                            <span class="mobile-info-label">Classe frequentata</span>
+                            <span class="mobile-info-value" id="mobileClasse"></span>
+                        </div>
+                        <div class="mobile-info-item">
+                            <span class="mobile-info-label">Squadra</span>
+                            <span class="mobile-info-value" id="mobileSquadra"></span>
+                        </div>
+                        <div class="mobile-info-item">
+                            <span class="mobile-info-label">Puo uscire da solo</span>
+                            <span class="mobile-info-value" id="mobileUscitaAutorizzata"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mobile-section" id="mobilePresenzeSection" style="display:none;">
+                    <h3>Presenze Settimanali</h3>
+                    <div id="mobilePresenzeList" class="mobile-presenze-list"></div>
+                </div>
+
+                <div class="mobile-section">
+                    <h3>Contatti di Emergenza</h3>
+                    <div class="mobile-contact" id="mobileContatti"></div>
+                </div>
+
+                <div class="mobile-section">
+                    <h3>Allergie / Intolleranze</h3>
+                    <p id="mobileAllergie"></p>
+                </div>
+
+                <div class="mobile-section" id="mobileTerapieSection" style="display:none;">
+                    <h3>Terapie e Note</h3>
+                    <p id="mobileTerapie"></p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="{{ static_asset('js/common.js') }}"></script>
+    <script src="{{ static_asset('js/mobile.js') }}"></script>
+</body>
+</html>

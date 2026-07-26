@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-shell">
+    <div class="page-container reporting-page">
+        <div class="page-header reporting-page-header">
+            <a href="/" class="btn-back">&larr;</a>
+            <div>
+                <h2>Grafici BI</h2>
+                <p class="page-lead">Cruscotto operativo per leggere subito coperture, stati e distribuzioni degli animatori.</p>
+            </div>
+        </div>
+
+        <section class="report-card report-card-hero">
+            <div class="report-toolbar report-toolbar-stack">
+                <div>
+                    <p class="report-title">Cruscotto animatori</p>
+                    <p class="report-subtitle" id="biScopeSummary">Caricamento dati in corso...</p>
+                </div>
+            </div>
+            <div class="kpi-grid" id="biKpiGrid"></div>
+        </section>
+
+        <div class="chart-grid">
+            <section class="report-card chart-card">
+                <div class="chart-card-header">
+                    <div>
+                        <p class="report-title">Disponibilita per settimana</p>
+                        <p class="report-subtitle">Quanti animatori risultano disponibili per ogni settimana.</p>
+                    </div>
+                </div>
+                <div id="weekChart" class="bar-chart-list"></div>
+            </section>
+
+            <section class="report-card chart-card">
+                <div class="chart-card-header">
+                    <div>
+                        <p class="report-title">Distribuzione taglie maglietta</p>
+                        <p class="report-subtitle">Taglie piu richieste nel gruppo animatori.</p>
+                    </div>
+                </div>
+                <div id="shirtChart" class="bar-chart-list"></div>
+            </section>
+
+            <section class="report-card chart-card">
+                <div class="chart-card-header">
+                    <div>
+                        <p class="report-title">Stati documenti</p>
+                        <p class="report-subtitle">Avanzamento raccolta documentazione firmata.</p>
+                    </div>
+                </div>
+                <div id="docChart" class="bar-chart-list"></div>
+            </section>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ static_asset('js/reporting.js') }}"></script>
+{% endblock %}

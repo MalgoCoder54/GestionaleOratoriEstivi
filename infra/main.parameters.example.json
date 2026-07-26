@@ -1,0 +1,31 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": { "value": "westeurope" },
+    "resourceGroupName": { "value": "rg-oratorio-estivo-da-configurare" },
+    "sqlServerName": { "value": "sql-oratorio-da-configurare" },
+    "ragazziWebAppName": { "value": "app-oratorio-ragazzi-da-configurare" },
+    "animatoriWebAppName": { "value": "app-oratorio-animatori-da-configurare" },
+    "sqlDatabaseName": { "value": "oratorio-estivo" },
+    "ragazziDisplayName": { "value": "Oratorio Estivo - Ragazzi" },
+    "animatoriDisplayName": { "value": "Oratorio Estivo - Animatori" },
+    "organizationName": { "value": "Nome oratorio" },
+    "organizationLocation": { "value": "Comune" },
+    "defaultEventId": { "value": "EVENTO_ESEMPIO" },
+    "sqlAdminLogin": { "value": "sqladmin" },
+    "sqlAdminPassword": { "value": "__INSERIRE_DA_SECRET_MANAGER__" },
+    "appSqlUser": { "value": "oratorio_app_rw" },
+    "appSqlPassword": { "value": "__INSERIRE_DA_SECRET_MANAGER__" },
+    "flaskSecretKey": { "value": "__INSERIRE_DA_SECRET_MANAGER__" },
+    "appServicePlanSkuName": { "value": "B1" },
+    "sqlDatabaseSkuName": { "value": "S0" },
+    "sqlAllowAzureServices": { "value": true },
+    "sqlClientIpStart": { "value": "" },
+    "sqlClientIpEnd": { "value": "" },
+    "enableEasyAuth": { "value": false },
+    "entraTenantId": { "value": "__TENANT_ID__" },
+    "entraClientId": { "value": "__CLIENT_ID__" },
+    "entraClientSecret": { "value": "__CLIENT_SECRET__" }
+  }
+}

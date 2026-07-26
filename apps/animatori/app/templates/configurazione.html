@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-shell">
+    <div class="page-container config-page">
+        <div class="config-hero">
+            <div class="config-hero-main">
+                <div class="page-header config-page-header">
+                    <a href="/" class="btn-back">&larr;</a>
+                    <div>
+                        <h2>Configurazione</h2>
+                        <p class="config-hero-note">Gestisci contributo simbolico, magliette extra e calendario settimane dell'evento animatori.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="config-hero-summary">
+                <span class="config-summary-label">Evento attivo</span>
+                <strong class="config-summary-value">{{ config.settimane.numero_settimane }} settimane configurate</strong>
+            </div>
+        </div>
+
+        <form id="configForm" class="config-form" onsubmit="return saveConfig(event)">
+            <section class="pag-section config-section">
+                <div class="config-section-header">
+                    <h3 class="section-title">Importi Default</h3>
+                    <p class="config-section-description">Questi valori vengono proposti nella pagina contributi di ogni animatore.</p>
+                </div>
+                <div class="form-grid">
+                    <div class="form-row">
+                        <label>Contributo animatore (&euro;)</label>
+                        <input type="number" step="0.01" id="cfgContributo" value="{{ config.importi_default.contributo }}">
+                    </div>
+                    <div class="form-row">
+                        <label>Maglietta extra (&euro;)</label>
+                        <input type="number" step="0.01" id="cfgMagliettaExtra" value="{{ config.importi_default.maglietta_extra }}">
+                    </div>
+                </div>
+            </section>
+
+            <section class="pag-section config-section">
+                <div class="config-section-header">
+                    <h3 class="section-title">Settimane</h3>
+                    <p class="config-section-description">Le etichette e le date guidano disponibilita, turni e vista mobile.</p>
+                </div>
+                <div class="form-grid">
+                    {% for date_value in config.settimane.date_inizio %}
+                    <div class="form-row">
+                        <label>Settimana {{ loop.index }} - Etichetta</label>
+                        <input class="week-label" value="{{ config.settimane.etichette[loop.index0] }}">
+                    </div>
+                    <div class="form-row">
+                        <label>Settimana {{ loop.index }} - Inizio</label>
+                        <input class="week-date" type="date" value="{{ date_value }}">
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-save">Salva Configurazione</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>const CURRENT_CONFIG = {{ config | tojson }};</script>
+<script src="{{ static_asset('js/configurazione.js') }}"></script>
+{% endblock %}
