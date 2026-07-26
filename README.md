@@ -75,7 +75,4 @@ Questa applicazione tratta dati di minori, contatti familiari e possibili inform
 
 Vedi `docs/privacy-security.md`.
 
-## Licenza
-
-Questo repository è un template applicativo. Aggiungere una licenza prima della pubblicazione, in base alle esigenze dell’oratorio o dell’organizzazione che lo adotta.
 
